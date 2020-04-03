@@ -1,0 +1,13 @@
+gap: 600 # seconds
+pubsub:
+        credfile: "./cred.json"
+        projectid: "abc"
+        subscriber: "test"
+        timeout: 5 # seconds
+
+bigquery:
+        credfile: "./cred2.json"
+        projectid: "abc"
+        dataset: "test-dataset"
+
+
