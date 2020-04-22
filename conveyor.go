@@ -75,6 +75,7 @@ func UploadEvents(eventsMap map[string][][]byte, dataset, projectID, credFile st
 		b := bytes.NewBufferString(events)
 		rs := bigquery.NewReaderSource(b)
 		rs.SourceFormat = bigquery.JSON
+		rs.IgnoreUnknownValues = true
 		ds := client.Dataset(dataset)
 		loader := ds.Table(eventType).LoaderFrom(rs)
 		job, err := loader.Run(ctx)
