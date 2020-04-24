@@ -29,8 +29,10 @@ func main() {
 		if events, err := conveyor.Consume(subID, timeoutDuration, psProjID, psCredFile); err != nil {
 			log.Println("Error fetching messages", err)
 		} else {
-			if err := conveyor.UploadEvents(events, bqDataset, bqProjID, bqCredFile); err != nil {
-				log.Println("Error uploading data", err)
+			if errs := conveyor.UploadEvents(events, bqDataset, bqProjID, bqCredFile); len(errs) != 0 {
+				for _, err := range errs {
+					log.Println("Error uploading data", err)
+				}
 			}
 		}
 		log.Println("run completed at:", time.Now())
