@@ -33,6 +33,7 @@ func init() {
 	// Set the path to look for the configurations file
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("$HOME/.conveyor")
+	viper.AddConfigPath("/mnt")
 	viper.AutomaticEnv()
 
 	viper.SetConfigType("yml")
