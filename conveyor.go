@@ -38,7 +38,11 @@ func Consume(subID string, timeout time.Duration, projectID, credFile string) (m
 		for {
 			select {
 			case msg := <-cm:
-				entity := msg.Attributes["entity"]
+				entity, ok := msg.Attributes["entity"]
+				if !ok {
+					log.Println("Warning: entity name missing. Data:" + string(msg.Data))
+					continue
+				}
 				if _, ok := eventsMap[entity]; !ok {
 					eventsMap[entity] = make([][]byte, 0)
 				}
