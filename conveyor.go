@@ -65,7 +65,7 @@ func Consume(subID string, timeout time.Duration, projectID, credFile string) (m
 	return eventsMap, nil
 }
 
-func UploadEvents(eventsMap map[string][][]byte, dataset, projectID, credFile string) []error {
+func UploadEvents(eventsMap map[string][][]byte, dataset, projectID, credFile, location string) []error {
 	ctx := context.Background()
 	errList := make([]error, 0)
 	client, err := bigquery.NewClient(ctx, projectID, option.WithCredentialsFile(credFile))
@@ -73,6 +73,7 @@ func UploadEvents(eventsMap map[string][][]byte, dataset, projectID, credFile st
 		errList = append(errList, err)
 		return errList
 	}
+	client.Location = location
 
 	for eventType, eventList := range eventsMap {
 		var events string

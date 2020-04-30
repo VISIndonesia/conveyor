@@ -17,6 +17,7 @@ func main() {
 	bqProjID := config.Configuration.BigQuery.ProjectID
 	bqCredFile := config.Configuration.BigQuery.CredFile
 	bqDataset := config.Configuration.BigQuery.Dataset
+	bqLocation := config.Configuration.BigQuery.Location
 
 	gap := config.Configuration.Gap
 
@@ -29,7 +30,7 @@ func main() {
 		if events, err := conveyor.Consume(subID, timeoutDuration, psProjID, psCredFile); err != nil {
 			log.Println("Error fetching messages", err)
 		} else {
-			if errs := conveyor.UploadEvents(events, bqDataset, bqProjID, bqCredFile); len(errs) != 0 {
+			if errs := conveyor.UploadEvents(events, bqDataset, bqProjID, bqCredFile, bqLocation); len(errs) != 0 {
 				for _, err := range errs {
 					log.Println("Error uploading data", err)
 				}

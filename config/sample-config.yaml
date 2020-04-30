@@ -9,5 +9,6 @@ bigquery:
         credfile: "./cred2.json"
         projectid: "abc"
         dataset: "test-dataset"
+        location: "" 
 
 

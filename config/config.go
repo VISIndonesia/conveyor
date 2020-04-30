@@ -17,6 +17,7 @@ type BigQuery struct {
 	CredFile  string
 	ProjectID string
 	Dataset   string
+	Location string
 }
 
 type Config struct {
