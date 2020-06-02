@@ -26,7 +26,7 @@ func Consume(subID string, timeout time.Duration, projectID, credFile string) (m
 
 	sub := client.Subscription(subID)
 
-	sub.ReceiveSettings.Synchronous = true
+	sub.ReceiveSettings.Synchronous = false
 
 	// Receive messages for 5 seconds.
 	ctx, cancel := context.WithTimeout(ctx, timeout)
@@ -37,7 +37,10 @@ func Consume(subID string, timeout time.Duration, projectID, credFile string) (m
 	go func() {
 		for {
 			select {
-			case msg := <-cm:
+			case msg, ok := <-cm:
+				if !ok {
+					continue
+				}
 				entity, ok := msg.Attributes["entity"]
 				if !ok {
 					log.Println("Warning: entity name missing. Data:" + string(msg.Data))
