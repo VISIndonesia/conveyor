@@ -26,16 +26,17 @@ func main() {
 	log.Printf("Running with configs: %+v\n", config.Configuration)
 
 	for x := range time.Tick(time.Duration(gap) * time.Second) {
-		log.Println("Starting job:", x)
+		log.Println("starting job:", x)
 		if events, err := conveyor.Consume(subID, timeoutDuration, psProjID, psCredFile); err != nil {
 			log.Println("Error fetching messages", err)
 		} else {
+			log.Println("Uploading events")
 			if errs := conveyor.UploadEvents(events, bqDataset, bqProjID, bqCredFile, bqLocation); len(errs) != 0 {
 				for _, err := range errs {
-					log.Println("Error uploading data", err)
+					log.Println("Error uploading events", err)
 				}
 			}
 		}
-		log.Println("run completed at:", time.Now())
+		log.Println("job completed at:", time.Now())
 	}
 }

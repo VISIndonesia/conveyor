@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"runtime"
 	"time"
 
 	"google.golang.org/api/option"
@@ -27,6 +28,7 @@ func Consume(subID string, timeout time.Duration, projectID, credFile string) (m
 	sub := client.Subscription(subID)
 
 	sub.ReceiveSettings.Synchronous = false
+	sub.ReceiveSettings.NumGoroutines = runtime.NumCPU()
 
 	// Receive messages for 5 seconds.
 	ctx, cancel := context.WithTimeout(ctx, timeout)
@@ -36,24 +38,20 @@ func Consume(subID string, timeout time.Duration, projectID, credFile string) (m
 	eventsMap := make(map[string][][]byte)
 	go func() {
 		for {
-			select {
-			case msg, ok := <-cm:
-				if !ok {
-					continue
-				}
-				entity, ok := msg.Attributes["entity"]
-				if !ok {
-					log.Println("Warning: entity name missing. Data:" + string(msg.Data))
-					continue
-				}
-				if _, ok := eventsMap[entity]; !ok {
-					eventsMap[entity] = make([][]byte, 0)
-				}
-				eventsMap[entity] = append(eventsMap[entity], msg.Data)
-				msg.Ack()
-			case <-ctx.Done():
+			msg, ok := <-cm
+			if !ok {
 				return
 			}
+			entity, ok := msg.Attributes["entity"]
+			if !ok {
+				log.Println("Warning: entity name missing. Data:" + string(msg.Data))
+				continue
+			}
+			if _, ok := eventsMap[entity]; !ok {
+				eventsMap[entity] = make([][]byte, 0)
+			}
+			eventsMap[entity] = append(eventsMap[entity], msg.Data)
+			msg.Ack()
 		}
 	}()
 
