@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"log"
 	"runtime"
 	"time"
@@ -89,16 +90,16 @@ func UploadEvents(eventsMap map[string][][]byte, dataset, projectID, credFile, l
 		loader := ds.Table(eventType).LoaderFrom(rs)
 		job, err := loader.Run(ctx)
 		if err != nil {
-			errList = append(errList, err)
+			errList = append(errList, errors.New("Error: "+err.Error()+" eventType: "+eventType+" events: "+string(events)))
 			continue
 		}
 		status, err := job.Wait(ctx)
 		if err != nil {
-			errList = append(errList, err)
+			errList = append(errList, errors.New("Error: "+err.Error()+" eventType: "+eventType+" events: "+string(events)))
 			continue
 		}
 		if status.Err() != nil {
-			errList = append(errList, status.Err())
+			errList = append(errList, errors.New("Error: "+status.Err().Error()+" eventType: "+eventType+" events: "+string(events)))
 			continue
 		}
 	}
